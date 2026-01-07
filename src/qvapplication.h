@@ -63,6 +63,8 @@ public:
 
     void openOptionsDialog(QWidget *parent = nullptr);
 
+    void openAIQnADialog(QWidget *parent = nullptr);
+
     void openWelcomeDialog(QWidget *parent = nullptr);
 
     void openAboutDialog(QWidget *parent = nullptr);
@@ -106,6 +108,7 @@ private:
     ShortcutManager shortcutManager;
 
     QPointer<QVOptionsDialog> optionsDialog;
+    QPointer<QDialog> qnaDialog; // Use QDialog as base for now, will specify later
     QPointer<QVWelcomeDialog> welcomeDialog;
     QPointer<QVAboutDialog> aboutDialog;
 

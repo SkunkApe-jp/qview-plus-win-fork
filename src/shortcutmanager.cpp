@@ -60,6 +60,10 @@ void ShortcutManager::initializeShortcutsList()
                            "showfileinfo",
                            QStringList(QKeySequence(Qt::Key_I).toString()),
                            {} });
+    shortcutsList.append({ tr("Show Gallery"),
+                           "showgallery",
+                           QStringList(QKeySequence(Qt::Key_G).toString()),
+                           {} });
     shortcutsList.append(
             { tr("Restore from Trash"), "undo", keyBindingsToStringList(QKeySequence::Undo), {} });
 #ifdef Q_OS_WIN
@@ -77,6 +81,9 @@ void ShortcutManager::initializeShortcutsList()
     // cmd+enter for renaming, mac-style
     shortcutsList.last().defaultShortcuts.prepend(
             QKeySequence(Qt::CTRL | Qt::Key_Return).toString());
+
+    shortcutsList.append(
+            { tr("AI Rename"), "airename", QStringList(QKeySequence(Qt::Key_R).toString()), {} });
 
     shortcutsList.append(
             { tr("Move to Trash"), "delete", keyBindingsToStringList(QKeySequence::Delete), {} });

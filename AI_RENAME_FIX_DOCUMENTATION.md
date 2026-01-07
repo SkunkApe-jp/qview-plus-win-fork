@@ -151,6 +151,8 @@ AI-Generated Filename
 2. **Error Handling**: Add better error messages for API failures
 3. **Configuration Validation**: Validate API key format before saving
 4. **UI Enhancement**: Add connection status indicator in AI Rename dialog
+5. **Image Description**: Add a setting in the context menu that generates a description of the image
+6. **Text Extraction**: Implement text extraction (OCR) functionality
 
 ## Conclusion
 

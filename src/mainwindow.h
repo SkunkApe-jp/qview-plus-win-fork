@@ -6,11 +6,14 @@
 #include "qvgraphicsview.h"
 #include "openwith.h"
 #include "qvairenamedialog.h"
+#include "qvgallerysidebar.h"
 
 #include <QMainWindow>
 #include <QShortcut>
 #include <QNetworkAccessManager>
 #include <QStack>
+#include <QDockWidget>
+#include <QToolButton>
 
 namespace Ui {
 class MainWindow;
@@ -66,6 +69,8 @@ public:
 
     void showFileInfo();
 
+    void showGallery();
+
     void askDeleteFile(bool permanent);
 
     void deleteFile(bool permanent);
@@ -81,6 +86,12 @@ public:
     void rename();
 
     void aiRename();
+
+    void aiDescription();
+
+    void aiExtractText();
+
+    void aiQna();
 
     void zoomIn();
 
@@ -191,6 +202,10 @@ private:
 
     QTimer *populateOpenWithTimer;
     QFutureWatcher<QList<OpenWith::OpenWithItem>> openWithFutureWatcher;
+
+    QDockWidget *galleryDock;
+    QVGallerySidebar *gallerySidebar;
+    QToolButton *hamburgerButton;
 };
 
 #endif // MAINWINDOW_H

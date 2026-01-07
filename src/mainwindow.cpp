@@ -4,6 +4,9 @@
 #include "qvcocoafunctions.h"
 #include "qvrenamedialog.h"
 #include "qvairenamedialog.h"
+#include "qvaitoolsdialog.h"
+#include "qvaiqnadialog.h"
+#include "qvgallerysidebar.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -95,6 +98,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     contextMenu->addSeparator();
     actionManager.addCloneOfAction(contextMenu, "rename");
     actionManager.addCloneOfAction(contextMenu, "airename");
+    actionManager.addCloneOfAction(contextMenu, "aidescription");
+    actionManager.addCloneOfAction(contextMenu, "aiextracttext");
+    actionManager.addCloneOfAction(contextMenu, "aiqna");
     actionManager.addCloneOfAction(contextMenu, "delete");
     contextMenu->addSeparator();
     actionManager.addCloneOfAction(contextMenu, "nextfile");
@@ -130,6 +136,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(virtualMenu, &QMenu::triggered, this, [this](QAction *triggeredAction) {
         ActionManager::actionTriggered(triggeredAction, this);
     });
+
+    // Initialize gallery sidebar
+    galleryDock = new QDockWidget(tr("Gallery"), this);
+    galleryDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    galleryDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    galleryDock->setTitleBarWidget(new QWidget()); // Hide the default 'black' title bar
+    gallerySidebar = new QVGallerySidebar(galleryDock);
+    galleryDock->setWidget(gallerySidebar);
+    addDockWidget(Qt::LeftDockWidgetArea, galleryDock);
+    galleryDock->hide();
+
+    connect(gallerySidebar, &QVGallerySidebar::imageSelected, this, &MainWindow::openFile);
+
+    // Hamburger button in menu bar
+    hamburgerButton = new QToolButton(menuBar());
+    hamburgerButton->setIcon(QIcon::fromTheme("view-list-icons", QIcon::fromTheme("format-justify-fill")));
+    hamburgerButton->setToolTip(tr("Toggle Gallery"));
+    hamburgerButton->setCursor(Qt::PointingHandCursor);
+    hamburgerButton->setStyleSheet("QToolButton { border: none; padding: 4px; } QToolButton:hover { background: rgba(0,0,0,0.1); }");
+    connect(hamburgerButton, &QToolButton::clicked, this, &MainWindow::showGallery);
+    
+    menuBar()->setCornerWidget(hamburgerButton, Qt::TopLeftCorner);
 
     // Enable actions related to having a window
     disableActions();
@@ -408,6 +436,11 @@ void MainWindow::fileChanged()
 
     // repaint to handle error message
     update();
+
+    if (galleryDock->isVisible()) {
+        gallerySidebar->loadGallery(getCurrentFileDetails().folderFileInfoList,
+                                   getCurrentFileDetails().loadedIndexInFolder);
+    }
 }
 
 void MainWindow::disableActions()
@@ -494,7 +527,7 @@ void MainWindow::refreshProperties()
 
 void MainWindow::updateWindowTitle()
 {
-    QString newString = "qView";
+    QString newString = "qView Plus";
     if (getCurrentFileDetails().fileInfo.isFile()) {
         switch (qvApp->getSettingsManager().getInt(SettingsManager::Setting::TitleBarMode)) {
         case 1: {
@@ -826,6 +859,21 @@ void MainWindow::showFileInfo()
     info->raise();
 }
 
+void MainWindow::showGallery()
+{
+    if (galleryDock->isVisible()) {
+        galleryDock->hide();
+    } else {
+        if (!getCurrentFileDetails().isPixmapLoaded)
+            return;
+            
+        gallerySidebar->loadGallery(getCurrentFileDetails().folderFileInfoList, 
+                                   getCurrentFileDetails().loadedIndexInFolder);
+        galleryDock->show();
+        galleryDock->raise();
+    }
+}
+
 void MainWindow::askDeleteFile(bool permanent)
 {
     if (!permanent && !qvApp->getSettingsManager().getBool(SettingsManager::Setting::AskDelete)) {
@@ -1053,6 +1101,32 @@ void MainWindow::aiRename()
     });
 
     aiRenameDialog->open();
+}
+
+void MainWindow::aiDescription()
+{
+    if (!getCurrentFileDetails().isPixmapLoaded)
+        return;
+
+    auto *aiToolsDialog = new QVAIToolsDialog(this, getCurrentFileDetails().fileInfo, QVAIToolsDialog::Description);
+    aiToolsDialog->show();
+}
+
+void MainWindow::aiExtractText()
+{
+    if (!getCurrentFileDetails().isPixmapLoaded)
+        return;
+
+    auto *aiToolsDialog = new QVAIToolsDialog(this, getCurrentFileDetails().fileInfo, QVAIToolsDialog::OCR);
+    aiToolsDialog->show();
+}
+
+void MainWindow::aiQna()
+{
+    if (!getCurrentFileDetails().isPixmapLoaded)
+        return;
+
+    qvApp->openAIQnADialog(this);
 }
 
 void MainWindow::zoomIn()

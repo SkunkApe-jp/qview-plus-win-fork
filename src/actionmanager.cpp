@@ -256,6 +256,8 @@ QMenu *ActionManager::buildViewMenu(bool addIcon, QWidget *parent)
     addCloneOfAction(viewMenu, "mirror");
     addCloneOfAction(viewMenu, "flip");
     viewMenu->addSeparator();
+    addCloneOfAction(viewMenu, "showgallery");
+    viewMenu->addSeparator();
     if (qvApp->supportsTitlebarHiding())
         addCloneOfAction(viewMenu, "toggletitlebar");
     addCloneOfAction(viewMenu, "fullscreen");
@@ -574,6 +576,8 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->openContainingFolder();
     } else if (key == "showfileinfo") {
         relevantWindow->showFileInfo();
+    } else if (key == "showgallery") {
+        relevantWindow->showGallery();
     } else if (key == "delete") {
         relevantWindow->askDeleteFile(false);
     } else if (key == "deletepermanent") {
@@ -588,6 +592,12 @@ void ActionManager::actionTriggered(QAction *triggeredAction, MainWindow *releva
         relevantWindow->rename();
     } else if (key == "airename") {
         relevantWindow->aiRename();
+    } else if (key == "aidescription") {
+        relevantWindow->aiDescription();
+    } else if (key == "aiextracttext") {
+        relevantWindow->aiExtractText();
+    } else if (key == "aiqna") {
+        relevantWindow->aiQna();
     } else if (key == "zoomin") {
         relevantWindow->zoomIn();
     } else if (key == "zoomout") {
@@ -681,6 +691,11 @@ void ActionManager::initializeActionLibrary()
     showFileInfoAction->setData({ "disable" });
     actionLibrary.insert("showfileinfo", showFileInfoAction);
 
+    auto *showGalleryAction =
+            new QAction(QIcon::fromTheme("view-preview", QIcon::fromTheme("view-list-icons")), tr("Show &Gallery..."));
+    showGalleryAction->setData({ "folderdisable" });
+    actionLibrary.insert("showgallery", showGalleryAction);
+
     auto *deleteAction = new QAction(QIcon::fromTheme("edit-delete"), tr("&Move to Trash"));
 #ifdef Q_OS_WIN
     deleteAction->setText(tr("&Delete"));
@@ -718,6 +733,18 @@ void ActionManager::initializeActionLibrary()
                         tr("AI R&ename..."));
     aiRenameAction->setData({ "disable" });
     actionLibrary.insert("airename", aiRenameAction);
+
+    auto *aiDescriptionAction = new QAction(QIcon::fromTheme("document-properties"), tr("AI Description..."));
+    aiDescriptionAction->setData({ "disable" });
+    actionLibrary.insert("aidescription", aiDescriptionAction);
+
+    auto *aiExtractTextAction = new QAction(QIcon::fromTheme("edit-copy"), tr("AI Extract Text..."));
+    aiExtractTextAction->setData({ "disable" });
+    actionLibrary.insert("aiextracttext", aiExtractTextAction);
+
+    auto *aiQnaAction = new QAction(QIcon::fromTheme("help-about"), tr("AI Q&A..."));
+    aiQnaAction->setData({ "disable" });
+    actionLibrary.insert("aiqna", aiQnaAction);
 
     auto *zoomInAction = new QAction(QIcon::fromTheme("zoom-in"), tr("Zoom &In"));
     zoomInAction->setData({ "disable" });

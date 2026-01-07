@@ -57,6 +57,9 @@ set(PROJECT_SOURCES
     src/qvaboutdialog.cpp
     src/qvrenamedialog.cpp
     src/qvairenamedialog.cpp
+    src/qvaitoolsdialog.cpp
+    src/qvaiqnadialog.cpp
+    src/qvgallerysidebar.cpp
     src/qvwelcomedialog.cpp
     src/qvinfodialog.cpp
     src/qvimagecore.cpp
@@ -76,6 +79,9 @@ set(PROJECT_HEADERS
     src/qvaboutdialog.h
     src/qvrenamedialog.h
     src/qvairenamedialog.h
+    src/qvaitoolsdialog.h
+    src/qvaiqnadialog.h
+    src/qvgallerysidebar.h
     src/qvwelcomedialog.h
     src/qvinfodialog.h
     src/qvimagecore.h

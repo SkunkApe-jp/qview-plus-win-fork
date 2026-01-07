@@ -1,5 +1,6 @@
 #include "qvapplication.h"
 #include "qvoptionsdialog.h"
+#include "qvaiqnadialog.h"
 #include "qvcocoafunctions.h"
 #include "updatechecker.h"
 
@@ -247,6 +248,25 @@ void QVApplication::openOptionsDialog(QWidget *parent)
 
     optionsDialog = new QVOptionsDialog(parent);
     optionsDialog->show();
+}
+
+void QVApplication::openAIQnADialog(QWidget *parent)
+{
+    if (qnaDialog) {
+        qnaDialog->raise();
+        qnaDialog->activateWindow();
+        return;
+    }
+
+    auto *dialog = new QVAIQnADialog(parent);
+    qnaDialog = dialog;
+    
+    // Set the image if there's an active window
+    if (auto *window = getMainWindow(false)) {
+        dialog->setImage(window->getCurrentFileDetails().fileInfo);
+    }
+    
+    dialog->show();
 }
 
 void QVApplication::openWelcomeDialog(QWidget *parent)
