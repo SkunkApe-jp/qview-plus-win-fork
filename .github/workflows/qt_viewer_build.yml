@@ -1,0 +1,48 @@
+name: Build Qt Image Viewer
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - runner: 'windows-2022'
+            qtVersion: '6.8.1'
+            qtArch: 'win64_msvc2022_64'
+          - runner: 'ubuntu-22.04'
+            qtVersion: '6.8.1'
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qtVersion }}
+          arch: ${{ matrix.qtArch }}
+          cache: true
+
+      - name: Setup Ninja (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y ninja-build
+
+      - name: Configure and Build
+        shell: bash
+        run: |
+          mkdir build
+          cd build
+          cmake ../qt_image_viewer -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --parallel
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: QtImageViewer-${{ runner.os }}
+          path: |
+            build/qt_image_viewer*
+            build/*.exe
+            build/*.app
